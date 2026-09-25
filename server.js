@@ -95,6 +95,26 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/track', trackRoutes);
 app.use('/api/stats', statsRoutes);
 
+// URL secrète d'accès admin (optionnelle) : si la variable d'environnement
+// ADMIN_ACCESS_PATH est définie (ex: "x7k2-priv-adnel"), visiter
+// https://tonsite/x7k2-priv-adnel ouvre automatiquement la fenêtre de
+// connexion admin. Le chemin n'apparaît dans aucun fichier envoyé au
+// navigateur : seul le serveur le connaît, via cette variable d'environnement.
+// Pratique sur mobile (pas de clavier) : ajoute cette URL à l'écran d'accueil
+// pour y accéder en un tap. Le tap x7 sur le copyright et Ctrl+Alt+A restent
+// disponibles en secours, sans configuration.
+const ADMIN_ACCESS_PATH = process.env.ADMIN_ACCESS_PATH
+  ? process.env.ADMIN_ACCESS_PATH.replace(/^\/+/, '')
+  : null;
+if (ADMIN_ACCESS_PATH) {
+  app.get('/' + ADMIN_ACCESS_PATH, (req, res) => {
+    // Cookie très court (10s), lu une seule fois par le JS public au
+    // chargement pour ouvrir la fenêtre de connexion, puis auto-expiré.
+    res.cookie('open_admin', '1', { maxAge: 10000, httpOnly: false, sameSite: 'Strict' });
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
