@@ -26,8 +26,19 @@ portfolio-app/
 
 ## Fonctionnement de l'espace admin
 
-- Le bouton admin n'est **pas visible** sur le site : appuie sur **Ctrl + Alt + A**
-  n'importe où sur la page pour ouvrir la fenêtre de connexion.
+- Le bouton admin n'est **pas visible** sur le site. Trois façons de l'ouvrir :
+  * **URL secrète (recommandé, surtout sur mobile)** : définis la variable
+    d'environnement `ADMIN_ACCESS_PATH` sur Render (ex: `x7k2-priv-adnel`,
+    une chaîne aléatoire difficile à deviner). Visiter ensuite
+    `https://tonsite.onrender.com/x7k2-priv-adnel` ouvre automatiquement la
+    fenêtre de connexion. Ce chemin n'apparaît dans aucun fichier envoyé au
+    navigateur — seul le serveur le connaît. Ajoute cette URL à l'écran
+    d'accueil de ton téléphone pour y accéder en un tap.
+  * Sur ordinateur, appuie sur **Ctrl + Alt + A** n'importe où sur la page
+    (fonctionne sans configuration).
+  * Sur mobile/tablette, tape **7 fois rapidement** (en moins de 2 secondes)
+    sur la mention de copyright tout en bas du site (fonctionne sans
+    configuration, mais moins discret que l'URL secrète).
 - Mot de passe par défaut : celui que tu définis dans la variable d'environnement
   `ADMIN_PASSWORD` (voir plus bas). Change-le dès la première connexion depuis
   l'onglet **Sécurité** de l'admin.
