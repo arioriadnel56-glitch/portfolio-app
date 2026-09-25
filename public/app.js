@@ -899,4 +899,3 @@ async function loadPasskeys() {
 
 document.getElementById('passkey-register-btn').addEventListener('click', registerPasskey);
 document.getElementById('passkey-login-btn').addEventListener('click', loginWithPasskey);
-
