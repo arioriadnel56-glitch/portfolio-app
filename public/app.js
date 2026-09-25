@@ -484,6 +484,18 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.altKey && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); openLogin(); }
 });
 
+/* Déclencheur via URL secrète (ADMIN_ACCESS_PATH côté serveur) : si le
+   serveur a déposé le cookie éphémère "open_admin", on ouvre la connexion
+   puis on supprime immédiatement le cookie pour qu'un rechargement de page
+   ne rouvre pas la fenêtre sans repasser par l'URL secrète. */
+(() => {
+  const match = document.cookie.match(/(?:^|; )open_admin=1(?:;|$)/);
+  if (match) {
+    document.cookie = 'open_admin=; Max-Age=0; SameSite=Strict; path=/';
+    openLogin();
+  }
+})();
+
 /* Déclencheur mobile : Ctrl+Alt+A est injoignable au doigt sur un téléphone
    (pas de clavier physique), donc on ajoute un déclencheur tactile équivalent :
    7 taps rapides (moins de 2s au total) sur la mention de copyright en pied de page. */
@@ -887,3 +899,4 @@ async function loadPasskeys() {
 
 document.getElementById('passkey-register-btn').addEventListener('click', registerPasskey);
 document.getElementById('passkey-login-btn').addEventListener('click', loginWithPasskey);
+
