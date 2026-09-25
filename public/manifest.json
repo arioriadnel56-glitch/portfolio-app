@@ -1,0 +1,16 @@
+{
+  "name": "ARIORI Adnel — Portfolio",
+  "short_name": "Adnel",
+  "description": "Portfolio de ARIORI Adnel, Développeur Full-Stack Freelance",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF9",
+  "theme_color": "#141414",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

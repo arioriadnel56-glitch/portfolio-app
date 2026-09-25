@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARIORI Adnel — Frontend Developer Freelance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#141414">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Adnel">
+
+<style>
+:root{
+  --bg:#FAFAF9;
+  --surface:#FFFFFF;
+  --ink:#141414;
+  --muted:#6E6E6C;
+  --line:#E4E3E0;
+  --pill:#141414;
+  --accent:#141414;
+  --radius:8px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Archivo',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px;}
+section{padding:100px 0;border-top:1px solid var(--line);}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--muted);margin:0 0 14px;text-transform:none;}
+.eyebrow::before{content:"/ ";color:var(--ink);}
+.section-title{font-size:clamp(1.8rem,3.4vw,2.6rem);letter-spacing:-0.02em;margin:0 0 16px;max-width:20ch;font-weight:700;}
+.section-lead{color:var(--muted);max-width:56ch;font-size:1.02rem;margin:0 0 44px;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:50;background:rgba(250,250,249,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:20px 0;}
+.brand{font-weight:900;font-size:1.05rem;letter-spacing:-0.01em;}
+.nav-links{display:flex;gap:28px;}
+.nav-links a{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--muted);transition:color .15s;}
+.nav-links a b{color:var(--ink);font-weight:500;}
+.nav-links a:hover{color:var(--ink);}
+.nav-cta{background:var(--ink);color:#fff;padding:11px 20px;border-radius:30px;font-size:0.85rem;font-weight:700;}
+@media (max-width:900px){ .nav-links{display:none;} }
+
+/* HERO */
+.hero{padding:70px 0 0;border-top:none;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:0.76rem;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:7px 14px;border-radius:30px;margin-bottom:28px;
+}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:#3EB873;}
+.hero-hello{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.95rem;margin:0 0 6px;}
+.hero-name{
+  font-size:clamp(3rem,10vw,7.5rem);font-weight:900;letter-spacing:-0.03em;line-height:0.92;
+  margin:0 0 28px;text-transform:uppercase;
+}
+.hero-grid{display:grid;grid-template-columns:1.3fr 0.9fr;gap:50px;align-items:end;padding-bottom:50px;}
+.hero p.role{font-size:1.4rem;font-weight:700;margin:0 0 14px;}
+.hero p.lead{color:var(--muted);font-size:1.02rem;max-width:46ch;margin:0 0 26px;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+.btn{display:inline-block;padding:13px 26px;border-radius:30px;font-size:0.92rem;font-weight:700;transition:transform .12s,opacity .15s;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--ink);color:#fff;}
+.btn-ghost{border:1px solid var(--line);color:var(--ink);}
+.social-inline{display:flex;gap:16px;margin-top:22px;}
+.social-inline a{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--muted);text-decoration:underline;text-underline-offset:3px;}
+.photo-frame{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);}
+.photo-frame img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 15%;}
+
+/* TICKER */
+.ticker-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--ink);overflow:hidden;padding:16px 0;}
+.ticker-track{display:flex;gap:40px;white-space:nowrap;animation:scroll-left 26s linear infinite;width:max-content;}
+.ticker-track span{font-family:'IBM Plex Mono',monospace;color:#EDEDEA;font-size:0.9rem;}
+@keyframes scroll-left{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.service-card{background:var(--surface);padding:30px;}
+.service-icon{font-size:1.4rem;color:var(--ink);margin-bottom:16px;display:block;}
+.service-card h3{font-size:1.05rem;margin:0 0 8px;font-weight:700;}
+.service-card p{color:var(--muted);font-size:0.92rem;margin:0;}
+@media (max-width:820px){ .services-grid{grid-template-columns:1fr 1fr;} }
+@media (max-width:560px){ .services-grid{grid-template-columns:1fr;} }
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px;}
+.filter-tab{
+  font-family:'IBM Plex Mono',monospace;font-size:0.8rem;padding:9px 18px;border-radius:30px;
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);
+}
+.filter-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* PROJECTS */
+.project-row{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;padding:28px 0;border-top:1px solid var(--line);}
+.project-row:first-of-type{border-top:none;}
+.project-title{font-size:1.2rem;font-weight:700;margin:0 0 8px;}
+.project-desc{color:var(--muted);margin:0 0 12px;max-width:60ch;font-size:0.95rem;}
+.project-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);padding:4px 12px;border-radius:20px;}
+.project-link{font-size:0.88rem;text-decoration:underline;text-underline-offset:3px;color:var(--ink);font-weight:700;}
+.project-date{font-family:'IBM Plex Mono',monospace;font-size:0.74rem;color:var(--muted);white-space:nowrap;padding-top:4px;}
+.empty-state{color:var(--muted);padding:10px 0;font-size:0.95rem;}
+
+/* SKILLS */
+.skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.skill-card{padding:24px;background:var(--surface);}
+.skill-card h4{margin:0 0 8px;font-size:0.98rem;font-weight:700;}
+.skill-card p{margin:0;color:var(--muted);font-size:0.85rem;}
+@media (max-width:900px){ .skills-grid{grid-template-columns:1fr 1fr;} }
+@media (max-width:560px){ .skills-grid{grid-template-columns:1fr;} }
+
+/* METHOD (timeline style) */
+.method-list{border-top:1px solid var(--line);}
+.method-item{display:grid;grid-template-columns:70px 1fr;gap:24px;padding:24px 0;border-bottom:1px solid var(--line);}
+.method-item .num{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.85rem;}
+.method-item h4{margin:0 0 6px;font-size:1.05rem;font-weight:700;}
+.method-item p{margin:0;color:var(--muted);font-size:0.92rem;}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.why-card{background:var(--surface);padding:26px;}
+.why-card h4{margin:0 0 6px;font-size:1rem;font-weight:700;}
+.why-card p{margin:0;color:var(--muted);font-size:0.88rem;}
+@media (max-width:820px){ .why-grid{grid-template-columns:1fr 1fr;} }
+@media (max-width:560px){ .why-grid{grid-template-columns:1fr;} }
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.price-card{background:var(--surface);padding:30px;text-align:center;}
+.price-card h4{margin:0 0 10px;font-size:1.1rem;font-weight:700;}
+.price-soon{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:0.85rem;}
+@media (max-width:820px){ .pricing-grid{grid-template-columns:1fr;} }
+
+/* CTA BANNER */
+.cta-banner{background:var(--ink);color:#fff;border-top:none;}
+.cta-grid{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;}
+.cta-grid h2{margin:0 0 18px;font-size:2.2rem;max-width:16ch;color:#fff;font-weight:900;letter-spacing:-0.02em;}
+.cta-grid p{color:#B9B9B9;}
+.cta-actions{display:flex;gap:14px;flex-wrap:wrap;}
+.cta-banner .btn-ghost{border-color:#3A3A38;color:#fff;}
+.cta-photo{width:150px;height:150px;border-radius:50%;overflow:hidden;border:2px solid #3A3A38;}
+.cta-photo img{width:100%;height:100%;object-fit:cover;object-position:center 15%;}
+.avatar-upload{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.avatar-upload img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:center 15%;border:1px solid #3A3A38;}
+.avatar-upload label.upload-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:#fff;border:1px solid #3A3A38;
+  padding:9px 16px;border-radius:30px;display:inline-block;
+}
+@media (max-width:700px){ .cta-grid{grid-template-columns:1fr;text-align:left;} }
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
+.about-text p{color:var(--muted);font-size:1rem;max-width:54ch;margin:0 0 16px;}
+.about-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+.about-badges span{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;border:1px solid var(--line);padding:7px 13px;border-radius:20px;color:var(--muted);}
+@media (max-width:820px){ .about-grid{grid-template-columns:1fr;} }
+
+/* REVIEWS */
+.reviews-layout{display:grid;grid-template-columns:0.9fr 1.1fr;gap:48px;align-items:start;}
+.review-form{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;position:sticky;top:90px;}
+.review-form h3{margin:0 0 6px;font-size:1.05rem;font-weight:700;}
+.review-form p.hint{color:var(--muted);font-size:0.85rem;margin:0 0 18px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.74rem;color:var(--muted);margin-bottom:6px;}
+.field input,.field textarea,.field select{
+  width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;
+  font-family:'Archivo',sans-serif;font-size:0.95rem;background:var(--bg);color:var(--ink);
+}
+.field textarea{resize:vertical;min-height:80px;}
+.rating-picker{display:flex;gap:6px;}
+.star-btn{background:none;border:none;font-size:1.5rem;color:var(--line);padding:0;line-height:1;}
+.star-btn.active{color:var(--ink);}
+.review-list{display:flex;flex-direction:column;gap:16px;}
+.review-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;}
+.review-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.review-name{font-weight:700;}
+.review-stars{color:var(--ink);letter-spacing:2px;font-size:0.9rem;}
+.review-date{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--muted);}
+.review-msg{color:var(--ink);font-size:0.95rem;margin:0;}
+@media (max-width:900px){ .reviews-layout{grid-template-columns:1fr;} .review-form{position:static;} }
+
+/* PROCHAINS PROJETS */
+.future-grid{display:flex;flex-direction:column;gap:28px;}
+.future-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;}
+.future-title{font-size:1.2rem;font-weight:700;margin:0 0 8px;}
+.future-desc{color:var(--muted);font-size:0.96rem;margin:0 0 18px;}
+.future-media{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;}
+.future-media-item{flex-shrink:0;width:180px;height:120px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--bg);cursor:pointer;position:relative;}
+.future-media-item img{width:100%;height:100%;object-fit:cover;}
+.future-media-item.video-item::after{
+  content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:1.4rem;background:rgba(0,0,0,0.25);
+}
+.reaction-row{display:flex;gap:10px;align-items:center;margin-bottom:18px;}
+.reaction-btn{
+  display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:30px;border:1px solid var(--line);
+  background:var(--bg);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--ink);cursor:pointer;
+}
+.reaction-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.reaction-btn.dislike.active{background:#C0334D;border-color:#C0334D;}
+
+.poll-block{border-top:1px solid var(--line);padding-top:18px;}
+.poll-question{font-weight:700;margin:0 0 12px;font-size:0.98rem;}
+.poll-options{display:flex;flex-direction:column;gap:8px;}
+.poll-option{
+  position:relative;text-align:left;padding:10px 14px;border:1px solid var(--line);border-radius:8px;
+  background:var(--bg);cursor:pointer;font-family:'Archivo',sans-serif;font-size:0.92rem;color:var(--ink);
+  overflow:hidden;
+}
+.poll-option.voted{border-color:var(--ink);font-weight:700;}
+.poll-option .poll-fill{position:absolute;top:0;left:0;bottom:0;background:rgba(20,20,20,0.08);z-index:0;}
+.poll-option .poll-option-row{position:relative;z-index:1;display:flex;justify-content:space-between;gap:10px;}
+.poll-total{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--muted);margin:10px 0 0;}
+
+/* Visionneuse média (image ou vidéo) pour les prochains projets */
+.media-lightbox{position:fixed;inset:0;background:rgba(10,10,10,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.media-lightbox img{max-width:min(900px,90vw);max-height:80vh;object-fit:contain;border-radius:8px;}
+.media-lightbox iframe,.media-lightbox video{width:min(900px,90vw);height:min(506px,50vh);border:none;border-radius:8px;background:#000;}
+.media-lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;line-height:1;}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:0.8fr 1.2fr;gap:56px;}
+.contact-info .item{margin-bottom:22px;}
+.contact-info .item label{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.74rem;color:var(--muted);margin-bottom:6px;}
+.contact-info .item a,.contact-info .item span{font-size:1rem;font-weight:600;}
+.contact-form{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-note{color:var(--muted);font-size:0.8rem;margin-top:16px;}
+@media (max-width:900px){ .contact-grid{grid-template-columns:1fr;} .form-row{grid-template-columns:1fr;} }
+
+/* FOOTER */
+footer{padding:36px 0;border-top:1px solid var(--line);}
+.footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.footer-left h4{margin:0 0 4px;font-weight:900;}
+.footer-left p{margin:0;color:var(--muted);font-size:0.88rem;}
+.social-row{display:flex;gap:10px;}
+.social-row a{border:1px solid var(--line);border-radius:30px;padding:8px 14px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--muted);}
+.copyright{color:var(--muted);font-size:0.78rem;margin-top:20px;font-family:'IBM Plex Mono',monospace;}
+.chat-fab{
+  position:fixed;bottom:26px;right:26px;width:52px;height:52px;border-radius:50%;
+  background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;border:none;z-index:60;box-shadow:0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(20,20,20,0.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+.hidden{display:none !important;}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;width:100%;max-width:380px;}
+.modal h3{margin:0 0 6px;}
+.modal p.hint{color:var(--muted);font-size:0.85rem;margin:0 0 18px;}
+.modal-actions{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+.modal-close{background:none;border:none;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.8rem;text-decoration:underline;}
+
+/* ADMIN */
+.admin-panel{background:var(--ink);color:#fff;border-top:none;}
+.admin-panel .wrap{padding-top:40px;padding-bottom:60px;}
+.admin-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.admin-head h2{color:#fff;}
+.admin-sub{color:#B9B9B9;font-size:0.85rem;margin:0 0 30px;}
+.admin-tabs{display:flex;gap:8px;margin-bottom:28px;border-bottom:1px solid #3A3A38;flex-wrap:wrap;}
+.admin-tab{background:none;border:none;color:#B9B9B9;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;padding:10px 16px;border-bottom:2px solid transparent;}
+.admin-tab.active{color:#fff;border-color:#fff;}
+.admin-section{display:none;}
+.admin-section.active{display:block;}
+.admin-card{background:#1F1F1E;border:1px solid #3A3A38;border-radius:14px;padding:22px;margin-bottom:18px;}
+.admin-card h4{margin:0 0 14px;font-size:0.95rem;}
+.admin-field{margin-bottom:14px;}
+.admin-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:#B9B9B9;margin-bottom:6px;}
+.admin-field input,.admin-field textarea{
+  width:100%;padding:10px 12px;border:1px solid #3A3A38;border-radius:8px;
+  font-family:'Archivo',sans-serif;font-size:0.9rem;background:var(--ink);color:#fff;
+}
+.admin-field textarea{resize:vertical;min-height:70px;}
+.admin-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.admin-list-item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #3A3A38;}
+.admin-list-item:first-child{border-top:none;}
+.admin-list-item .info strong{display:block;font-size:0.92rem;}
+.admin-list-item .info span{color:#B9B9B9;font-size:0.78rem;}
+.admin-actions-inline{display:flex;gap:10px;flex-shrink:0;}
+.link-btn{background:none;border:none;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;text-decoration:underline;color:#fff;}
+.link-btn.danger{color:#E68A96;}
+.btn-small{padding:10px 18px;font-size:0.85rem;}
+.exit-admin{background:none;border:1px solid #3A3A38;color:#fff;padding:10px 18px;border-radius:30px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);border:1px solid #3A3A38;color:#fff;padding:12px 22px;border-radius:30px;
+  font-size:0.88rem;opacity:0;transition:all .25s ease;z-index:200;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (max-width:900px){
+  .hero-grid,.about-grid,.contact-grid{grid-template-columns:1fr;}
+}
+
+/* PRELOADER */
+#preloader{
+  position:fixed;inset:0;z-index:9999;background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+#preloader.fade-out{opacity:0;visibility:hidden;pointer-events:none;}
+.preloader-brand{font-family:'Archivo',sans-serif;font-weight:900;font-size:1.4rem;color:#fff;letter-spacing:-0.01em;}
+.preloader-bar{width:180px;height:2px;background:#3A3A38;border-radius:2px;overflow:hidden;position:relative;}
+.preloader-bar::after{
+  content:"";position:absolute;top:0;left:0;height:100%;width:40%;background:#fff;border-radius:2px;
+  animation:preloader-slide 1.1s ease-in-out infinite;
+}
+.preloader-label{font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:#9A9A97;}
+@keyframes preloader-slide{
+  0%{transform:translateX(-100%);}
+  50%{transform:translateX(130%);}
+  100%{transform:translateX(320%);}
+}
+
+.project-card{
+  display:grid;grid-template-columns:220px 1fr auto;gap:24px;align-items:start;
+  padding:28px 0;border-top:1px solid var(--line);
+}
+.project-card:first-of-type{border-top:none;}
+.project-thumb{width:220px;height:150px;border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--line);flex-shrink:0;position:relative;}
+.project-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer;}
+.project-thumb.empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;}
+.gallery-nav{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:rgba(20,20,20,0.65);color:#fff;border:none;font-size:0.85rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+.gallery-nav.prev{left:6px;}
+.gallery-nav.next{right:6px;}
+.gallery-count{position:absolute;bottom:6px;right:8px;background:rgba(20,20,20,0.65);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.68rem;padding:2px 8px;border-radius:20px;}
+.tech-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.tech-chip{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--muted);background:var(--bg);border:1px solid var(--line);padding:3px 10px;border-radius:14px;}
+.project-links{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+
+/* Visionneuse plein écran */
+.lightbox{position:fixed;inset:0;background:rgba(10,10,10,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.lightbox img{max-width:min(900px,90vw);max-height:80vh;object-fit:contain;border-radius:8px;}
+.lightbox-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:1.8rem;cursor:pointer;line-height:1;}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;border:none;font-size:1.3rem;cursor:pointer;}
+.lightbox-nav.prev{left:16px;}
+.lightbox-nav.next{right:16px;}
+.lightbox-count{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:0.8rem;}
+
+@media (max-width:760px){ .project-card{grid-template-columns:1fr;} .project-thumb{width:100%;height:180px;} }
+
+.img-upload-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.img-upload-row .preview{width:70px;height:70px;border-radius:8px;object-fit:cover;border:1px solid #3A3A38;background:#1F1F1E;}
+.img-upload-row label.upload-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:#fff;border:1px solid #3A3A38;
+  padding:9px 16px;border-radius:30px;display:inline-block;
+}
+.gallery-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.gallery-grid .thumb-wrap{position:relative;width:76px;height:76px;}
+.gallery-grid .thumb-wrap img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #3A3A38;}
+.gallery-grid .thumb-remove{
+  position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;
+  background:#E68A96;color:#171922;border:none;font-size:0.7rem;line-height:1;cursor:pointer;
+}
+.gallery-grid .thumb-add{
+  width:76px;height:76px;border-radius:8px;border:1px dashed #3A3A38;background:none;color:#9195A6;
+  font-family:'IBM Plex Mono',monospace;font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;
+}
+.gallery-grid .thumb-wrap.video-thumb{display:flex;align-items:center;justify-content:center;background:#171922;color:#9195A6;font-size:1.4rem;}
+.media-video-row{display:flex;gap:8px;margin-bottom:14px;}
+.media-video-row input{flex:1;}
+.poll-builder .admin-field{margin-bottom:10px;}
+.poll-option-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.poll-option-row input{flex:1;}
+.poll-option-row button{flex-shrink:0;}
+.form-error{color:#E68A96;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;margin:8px 0 0;}
+.loading-inline{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#3A3A38;border:1px solid #3A3A38;border-radius:10px;overflow:hidden;}
+.stat-box{background:#1F1F1E;padding:22px;text-align:center;}
+.stat-box .num{font-size:1.9rem;font-weight:900;color:#fff;display:block;}
+.stat-box .label{font-family:'IBM Plex Mono',monospace;color:#9195A6;font-size:0.74rem;margin-top:6px;}
+@media (max-width:600px){ .stats-grid{grid-template-columns:1fr;} }
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.bar-row .bar-label{width:150px;flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-row .bar-track{flex:1;height:8px;background:#2C2F3D;border-radius:4px;overflow:hidden;}
+.bar-row .bar-fill{height:100%;background:#5B7CFA;border-radius:4px;}
+.bar-row .bar-count{width:34px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:#9195A6;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div id="preloader">
+  <div class="preloader-brand">adnel.</div>
+  <div class="preloader-bar"></div>
+  <div class="preloader-label">Chargement du portfolio…</div>
+</div>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="#accueil" class="brand">adnel.</a>
+    <div class="nav-links">
+      <a href="#projets">Projets<b id="nav-count-projets">[0]</b></a>
+      <a href="#prochains-projets">À venir<b id="nav-count-future">[0]</b></a>
+      <a href="#services">Services<b>[6]</b></a>
+      <a href="#competences">Compétences<b>[8]</b></a>
+      <a href="#avis">Avis<b id="nav-count-avis">[0]</b></a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="nav-cta">Collaborons</a>
+  </div>
+</nav>
+
+<section class="hero" id="accueil" style="border-top:none;">
+  <div class="wrap">
+    <p class="hero-hello mono">Bonjour</p>
+    <h1 class="hero-name" id="hero-name">ARIORI ADNEL</h1>
+    <div class="hero-grid">
+      <div>
+        <div class="badge"><span class="dot"></span> Disponible pour des projets freelance</div>
+        <p class="role" id="hero-role">Développeur Full-Stack Freelance</p>
+        <p class="lead" id="hero-bio"></p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">Collaborons</a>
+          <a href="#projets" class="btn btn-ghost">Voir mon travail</a>
+        </div>
+        <div class="social-inline" id="social-inline"></div>
+      </div>
+      <div class="photo-frame">
+        <img class="profile-photo" src="" alt="Portrait">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Responsive Design</span>
+    <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Responsive Design</span>
+    <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Responsive Design</span>
+    <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Responsive Design</span>
+  </div>
+</div>
+
+<section id="services">
+  <div class="wrap">
+    <p class="eyebrow">Services</p>
+    <h2 class="section-title">Mes services Frontend</h2>
+    <div class="services-grid">
+      <div class="service-card"><span class="service-icon">◧</span><h3>Site vitrine</h3><p>Création de sites modernes pour entreprises, marques, entrepreneurs et professionnels.</p></div>
+      <div class="service-card"><span class="service-icon">▤</span><h3>Landing Page</h3><p>Création de pages conçues pour présenter efficacement un produit, une application ou un service.</p></div>
+      <div class="service-card"><span class="service-icon">▣</span><h3>Interface Web</h3><p>Transformation d'une idée ou d'une maquette en interface web fonctionnelle et responsive.</p></div>
+      <div class="service-card"><span class="service-icon">◨</span><h3>Intégration UI</h3><p>Intégration fidèle de maquettes Figma ou autres designs en HTML/CSS/JavaScript.</p></div>
+      <div class="service-card"><span class="service-icon">⬚</span><h3>Responsive Design</h3><p>Adaptation des interfaces aux smartphones, tablettes et ordinateurs.</p></div>
+      <div class="service-card"><span class="service-icon">↻</span><h3>Refonte Frontend</h3><p>Modernisation d'un site existant afin d'améliorer son design, son responsive et son expérience utilisateur.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="projets">
+  <div class="wrap">
+    <p class="eyebrow">Portfolio</p>
+    <h2 class="section-title">Projets choisis</h2>
+    <p class="section-lead">Une sélection de projets réels, avec un focus sur l'implémentation frontend et l'expérience utilisateur.</p>
+    <div class="filter-tabs" id="filter-tabs"></div>
+    <div id="projects-list"><p class="loading-inline">Chargement des projets…</p></div>
+  </div>
+</section>
+
+<section id="prochains-projets">
+  <div class="wrap">
+    <p class="eyebrow">À venir</p>
+    <h2 class="section-title">Mes prochains projets</h2>
+    <p class="section-lead">Un aperçu de ce sur quoi je travaille — dis-moi ce que tu en penses, avec un like ou un avis au sondage.</p>
+    <div class="future-grid" id="future-projects-list"><p class="loading-inline">Chargement…</p></div>
+  </div>
+</section>
+
+<section id="competences">
+  <div class="wrap">
+    <p class="eyebrow">Compétences</p>
+    <h2 class="section-title">Mes compétences</h2>
+    <div class="skills-grid">
+      <div class="skill-card"><h4>HTML5</h4><p>Structure sémantique, formulaires, accessibilité et organisation propre du contenu.</p></div>
+      <div class="skill-card"><h4>CSS3</h4><p>Flexbox, Grid, responsive design, animations, transitions et interfaces modernes.</p></div>
+      <div class="skill-card"><h4>JavaScript</h4><p>Interactions, DOM, événements, logique frontend et fonctionnalités dynamiques.</p></div>
+      <div class="skill-card"><h4>Responsive Design</h4><p>Interfaces adaptées aux smartphones, tablettes et desktops.</p></div>
+      <div class="skill-card"><h4>UI Implementation</h4><p>Transformation de designs en interfaces web fonctionnelles.</p></div>
+      <div class="skill-card"><h4>Web Performance</h4><p>Optimisation du chargement, des images, du CSS et du JavaScript.</p></div>
+      <div class="skill-card"><h4>Git / GitHub</h4><p>Gestion et organisation du code.</p></div>
+      <div class="skill-card"><h4>Déploiement</h4><p>Mise en ligne de projets web avec des plateformes adaptées.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="methode">
+  <div class="wrap">
+    <p class="eyebrow">Méthode</p>
+    <h2 class="section-title">Comment je travaille</h2>
+    <div class="method-list">
+      <div class="method-item"><span class="num">01</span><div><h4>Discussion</h4><p>Comprendre votre idée, votre activité et vos objectifs.</p></div></div>
+      <div class="method-item"><span class="num">02</span><div><h4>Analyse</h4><p>Définir les fonctionnalités et la structure de l'interface.</p></div></div>
+      <div class="method-item"><span class="num">03</span><div><h4>Design</h4><p>Définir une expérience utilisateur claire et moderne.</p></div></div>
+      <div class="method-item"><span class="num">04</span><div><h4>Développement</h4><p>Construire l'interface avec HTML, CSS et JavaScript.</p></div></div>
+      <div class="method-item"><span class="num">05</span><div><h4>Responsive</h4><p>Tester et adapter le site aux différents écrans.</p></div></div>
+      <div class="method-item"><span class="num">06</span><div><h4>Livraison</h4><p>Optimiser, tester et mettre le projet en ligne.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="pourquoi">
+  <div class="wrap">
+    <p class="eyebrow">Pourquoi me choisir</p>
+    <h2 class="section-title">Travailler avec moi</h2>
+    <div class="why-grid">
+      <div class="why-card"><h4>Design moderne</h4><p>Je crée des interfaces propres et actuelles.</p></div>
+      <div class="why-card"><h4>Mobile First</h4><p>L'expérience mobile est prise en compte dès la conception.</p></div>
+      <div class="why-card"><h4>Code propre</h4><p>Le projet est structuré et facilement maintenable.</p></div>
+      <div class="why-card"><h4>Communication directe</h4><p>Vous échangez directement avec le développeur.</p></div>
+      <div class="why-card"><h4>Approche orientée utilisateur</h4><p>Chaque interface est simple à comprendre et agréable à utiliser.</p></div>
+      <div class="why-card"><h4>Livraison professionnelle</h4><p>Le projet est testé avant sa livraison.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="tarification">
+  <div class="wrap">
+    <p class="eyebrow">Tarification</p>
+    <h2 class="section-title">Des solutions adaptées à votre projet</h2>
+    <p class="section-lead">Chaque projet est différent. Je propose un devis adapté à vos besoins, à la complexité de l'interface et aux fonctionnalités demandées.</p>
+    <div class="pricing-grid">
+      <div class="price-card"><h4>Starter</h4><span class="price-soon">Bientôt</span></div>
+      <div class="price-card"><h4>Business</h4><span class="price-soon">Bientôt</span></div>
+      <div class="price-card"><h4>Premium</h4><span class="price-soon">Bientôt</span></div>
+    </div>
+    <div style="margin-top:30px;"><a href="#contact" class="btn btn-primary">Demander un devis →</a></div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="wrap cta-grid">
+    <div>
+      <h2>Un projet en tête ?</h2>
+      <p style="max-width:44ch;margin:0 0 22px;">Ensemble, on peut créer quelque chose de clair et d'impactant. Écris-moi, on en parle.</p>
+      <div class="cta-actions">
+        <a href="#contact" class="btn btn-primary" style="background:#fff;color:#111;">Me contacter</a>
+        <a href="#" id="cta-whatsapp-link" target="_blank" rel="noopener" class="btn btn-ghost">WhatsApp</a>
+      </div>
+    </div>
+    <div class="cta-photo"><img class="profile-photo" src="" alt="Portrait"></div>
+  </div>
+</section>
+
+<section id="apropos">
+  <div class="wrap about-grid">
+    <div class="about-text">
+      <p class="eyebrow">À propos</p>
+      <h2 class="section-title" id="about-title"></h2>
+      <div id="about-text"></div>
+      <div class="about-badges" id="about-badges"></div>
+    </div>
+    <div class="photo-frame"><img class="profile-photo" src="" alt="Portrait"></div>
+  </div>
+</section>
+
+<section id="avis">
+  <div class="wrap">
+    <p class="eyebrow">Avis</p>
+    <h2 class="section-title">Ce que disent mes visiteurs</h2>
+    <div class="reviews-layout">
+      <div class="review-form">
+        <h3>Laisser un avis</h3>
+        <p class="hint">Visible par tous les visiteurs du site.</p>
+        <div class="field"><label>Nom</label><input type="text" id="rv-name" placeholder="Votre nom"></div>
+        <div class="field">
+          <label>Note</label>
+          <div class="rating-picker" id="rv-rating">
+            <button type="button" class="star-btn" data-val="1">★</button>
+            <button type="button" class="star-btn" data-val="2">★</button>
+            <button type="button" class="star-btn" data-val="3">★</button>
+            <button type="button" class="star-btn" data-val="4">★</button>
+            <button type="button" class="star-btn" data-val="5">★</button>
+          </div>
+        </div>
+        <div class="field"><label>Message</label><textarea id="rv-message" placeholder="Votre avis..."></textarea></div>
+        <button class="btn btn-primary" id="rv-submit" style="width:100%;">Publier l'avis</button>
+      </div>
+      <div class="review-list" id="reviews-list"><p class="loading-inline">Chargement des avis…</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-info">
+      <p class="eyebrow">Contact</p>
+      <h2 class="section-title">Parlons de votre projet</h2>
+      <p class="section-lead" style="margin-bottom:30px;">Décrivez-moi votre idée et je vous répondrai avec les prochaines étapes.</p>
+      <div class="item"><label>Email</label><a id="contact-email" href="#"></a></div>
+      <div class="item"><label>WhatsApp</label><a id="contact-whatsapp" href="#" target="_blank" rel="noopener"></a></div>
+      <div class="item"><label>Localisation</label><span id="contact-location"></span></div>
+    </div>
+    <div class="contact-form">
+      <div class="form-row">
+        <div class="field"><label>Nom</label><input type="text" id="cf-name"></div>
+        <div class="field"><label>Email</label><input type="email" id="cf-email"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>WhatsApp</label><input type="text" id="cf-whatsapp"></div>
+        <div class="field">
+          <label>Type de projet</label>
+          <select id="cf-type">
+            <option>Site vitrine</option><option>Landing page</option><option>E-commerce</option>
+            <option>Interface web</option><option>Dashboard</option><option>Refonte de site</option><option>Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Budget estimatif</label><input type="text" id="cf-budget"></div>
+      <div class="field"><label>Description du projet</label><textarea id="cf-desc"></textarea></div>
+      <button class="btn btn-primary" id="cf-submit" style="width:100%;">Envoyer ma demande →</button>
+      <p class="form-note">Ton message m'est envoyé directement par email.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div class="footer-left">
+        <h4 id="footer-name">ARIORI Adnel</h4>
+        <p id="footer-tagline"></p>
+      </div>
+      <div class="social-row" id="footer-social-row"></div>
+    </div>
+    <div class="copyright">© <span id="year"></span> <span id="footer-copy-name">ARIORI Adnel</span> — Tous droits réservés · Conçu & codé en HTML / CSS / JavaScript</div>
+  </div>
+</footer>
+
+<a href="#" id="chat-fab" target="_blank" rel="noopener" class="chat-fab">💬</a>
+
+<!-- LOGIN MODAL -->
+<div class="overlay hidden" id="login-overlay">
+  <div class="modal">
+    <h3>Espace admin</h3>
+    <p class="hint">Réservé au propriétaire du site.</p>
+    <div class="field"><label>Mot de passe</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+    <p id="login-error" class="form-error" style="display:none;">Mot de passe incorrect.</p>
+    <div class="modal-actions">
+      <button class="modal-close" id="login-cancel">Annuler</button>
+      <button class="btn btn-primary btn-small" id="login-submit">Entrer</button>
+    </div>
+    <button class="btn btn-ghost hidden" id="passkey-login-btn" type="button" style="width:100%;margin-top:14px;">🔒 Se connecter avec Face ID / empreinte</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel hidden" id="admin-panel">
+  <div class="wrap">
+    <div class="admin-head">
+      <h2>Espace admin</h2>
+      <button class="exit-admin" id="exit-admin">Quitter l'admin</button>
+    </div>
+    <p class="admin-sub mono">Connecté — les modifications sont enregistrées dans la base PostgreSQL et visibles immédiatement par tous les visiteurs.</p>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="parametres">Paramètres</button>
+      <button class="admin-tab" data-tab="projets-admin">Projets</button>
+      <button class="admin-tab" data-tab="future-admin">Prochains projets</button>
+      <button class="admin-tab" data-tab="avis-admin">Avis</button>
+      <button class="admin-tab" data-tab="stats">Statistiques</button>
+      <button class="admin-tab" data-tab="securite">Sécurité</button>
+    </div>
+
+    <div class="admin-section active" id="tab-parametres">
+      <div class="admin-card">
+        <h4>Photo de profil</h4>
+        <div class="img-upload-row">
+          <img class="preview" id="avatar-preview" src="" alt="Aperçu">
+          <label class="upload-btn" for="pf-photo-input">Changer la photo</label>
+          <input type="file" accept="image/*" id="pf-photo-input" style="display:none;">
+        </div>
+      </div>
+      <div class="admin-card">
+        <h4>Identité</h4>
+        <div class="admin-row">
+          <div class="admin-field"><label>Nom affiché (hero)</label><input id="pf-name"></div>
+          <div class="admin-field"><label>Rôle</label><input id="pf-role"></div>
+        </div>
+        <div class="admin-field"><label>Phrase d'introduction (hero)</label><textarea id="pf-bio"></textarea></div>
+        <div class="admin-field"><label>Titre section "À propos"</label><input id="pf-about-title"></div>
+        <div class="admin-field"><label>Texte "à propos" (un paragraphe par ligne vide)</label><textarea id="pf-about" style="min-height:120px;"></textarea></div>
+        <div class="admin-field"><label>Badges "à propos" (séparés par des virgules)</label><input id="pf-badges"></div>
+      </div>
+      <div class="admin-card">
+        <h4>Contact</h4>
+        <div class="admin-row">
+          <div class="admin-field"><label>Email</label><input id="pf-email"></div>
+          <div class="admin-field"><label>Numéro WhatsApp (format international, ex: 2290149713800)</label><input id="pf-whatsapp"></div>
+        </div>
+        <div class="admin-field"><label>Localisation</label><input id="pf-location"></div>
+      </div>
+      <div class="admin-card">
+        <h4>Réseaux sociaux (laisser vide pour masquer)</h4>
+        <div class="admin-row">
+          <div class="admin-field"><label>GitHub</label><input id="pf-github" placeholder="https://github.com/..."></div>
+          <div class="admin-field"><label>LinkedIn</label><input id="pf-linkedin" placeholder="https://linkedin.com/in/..."></div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field"><label>YouTube</label><input id="pf-youtube" placeholder="https://youtube.com/@..."></div>
+          <div class="admin-field"><label>Instagram</label><input id="pf-instagram" placeholder="https://instagram.com/..."></div>
+        </div>
+        <div class="admin-field"><label>TikTok</label><input id="pf-tiktok" placeholder="https://tiktok.com/@..."></div>
+      </div>
+      <button class="btn btn-primary btn-small" id="save-settings">Enregistrer mes données</button>
+    </div>
+
+    <div class="admin-section" id="tab-projets-admin">
+      <div class="admin-card">
+        <h4 id="project-form-heading">Ajouter un projet</h4>
+        <label>Photos du projet (8 maximum)</label>
+        <div class="gallery-grid" id="project-gallery-grid" style="margin-top:8px;">
+          <button type="button" class="thumb-add" id="project-add-photo-btn">+ Ajouter<br>une photo</button>
+        </div>
+        <input type="file" accept="image/*" id="np-image-input" multiple style="display:none;">
+        <div class="admin-row">
+          <div class="admin-field"><label>Titre</label><input id="np-title"></div>
+          <div class="admin-field"><label>Catégorie (utilisée pour les filtres)</label><input id="np-category" placeholder="ex: Site vitrine"></div>
+        </div>
+        <div class="admin-field"><label>Description</label><textarea id="np-desc"></textarea></div>
+        <div class="admin-field"><label>Technologies utilisées (séparées par des virgules)</label><input id="np-tech" placeholder="ex: HTML, CSS, JavaScript"></div>
+        <div class="admin-row">
+          <div class="admin-field"><label>Lien du site (optionnel)</label><input id="np-link" placeholder="https://..."></div>
+          <div class="admin-field"><label>Lien GitHub (optionnel)</label><input id="np-github" placeholder="https://github.com/..."></div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary btn-small" id="add-project">Ajouter le projet</button>
+          <button class="exit-admin hidden" id="cancel-edit" type="button">Annuler la modification</button>
+        </div>
+      </div>
+      <div class="admin-card"><h4>Projets publiés</h4><div id="admin-projects-list"></div></div>
+    </div>
+
+    <div class="admin-section" id="tab-future-admin">
+      <div class="admin-card">
+        <h4 id="future-form-heading">Ajouter un prochain projet</h4>
+        <label>Médias (photos + vidéos, 6 maximum)</label>
+        <div class="gallery-grid" id="future-gallery-grid" style="margin-top:8px;">
+          <button type="button" class="thumb-add" id="future-add-photo-btn">+ Ajouter<br>une photo</button>
+        </div>
+        <input type="file" accept="image/*" id="future-image-input" multiple style="display:none;">
+        <div class="media-video-row">
+          <input id="future-video-url" placeholder="Lien vidéo YouTube, Vimeo ou direct (https://...)">
+          <button type="button" class="btn btn-ghost btn-small" id="future-add-video-btn">Ajouter la vidéo</button>
+        </div>
+        <div class="admin-field"><label>Titre</label><input id="future-title"></div>
+        <div class="admin-field"><label>Description</label><textarea id="future-desc"></textarea></div>
+
+        <div class="poll-builder" style="margin-top:18px;border-top:1px solid #3A3A38;padding-top:16px;">
+          <label>Sondage (optionnel — laisse la question vide pour ne pas en mettre)</label>
+          <div class="admin-field" style="margin-top:8px;"><input id="future-poll-question" placeholder="Ta question au visiteur..."></div>
+          <div id="future-poll-options"></div>
+          <button type="button" class="link-btn" id="future-add-option-btn">+ Ajouter une option</button>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:18px;">
+          <button class="btn btn-primary btn-small" id="future-save-btn">Ajouter le projet</button>
+          <button class="exit-admin hidden" id="future-cancel-edit" type="button">Annuler la modification</button>
+        </div>
+        <p id="future-error" class="form-error" style="display:none;"></p>
+      </div>
+      <div class="admin-card"><h4>Prochains projets publiés</h4><div id="admin-future-list"></div></div>
+    </div>
+
+    <div class="admin-section" id="tab-avis-admin">
+      <div class="admin-card"><h4>Gérer les avis reçus</h4><div id="admin-reviews-list"></div></div>
+    </div>
+
+    <div class="admin-section" id="tab-stats">
+      <div class="admin-card">
+        <h4>Vue d'ensemble</h4>
+        <div class="stats-grid" id="stats-overview">
+          <div class="stat-box"><span class="num">–</span><span class="label">Vues totales</span></div>
+          <div class="stat-box"><span class="num">–</span><span class="label">Visiteurs uniques</span></div>
+          <div class="stat-box"><span class="num">–</span><span class="label">Vues aujourd'hui</span></div>
+        </div>
+      </div>
+      <div class="admin-card">
+        <h4>Visites des 7 derniers jours</h4>
+        <div id="stats-daily"><p class="loading-inline">Chargement…</p></div>
+      </div>
+      <div class="admin-card">
+        <h4>Pages les plus visitées</h4>
+        <div id="stats-pages"><p class="loading-inline">Chargement…</p></div>
+      </div>
+      <div class="admin-card">
+        <h4>D'où viennent tes visiteurs</h4>
+        <div id="stats-referrers"><p class="loading-inline">Chargement…</p></div>
+      </div>
+      <div class="admin-card">
+        <h4>Appareils utilisés</h4>
+        <div id="stats-devices"><p class="loading-inline">Chargement…</p></div>
+      </div>
+    </div>
+
+    <div class="admin-section" id="tab-securite">
+      <div class="admin-card">
+        <h4>Connexion par Face ID / empreinte (passkey)</h4>
+        <p class="admin-sub" style="margin-bottom:14px;">Ajoute cet appareil pour te connecter sans mot de passe la prochaine fois — ton visage ou ton empreinte ne quittent jamais ton appareil, seule une preuve cryptographique est envoyée.</p>
+        <div id="passkey-list"><p class="empty-state">Aucun appareil enregistré.</p></div>
+        <div class="admin-field" style="margin-top:16px;"><label>Nom de cet appareil (optionnel)</label><input id="passkey-label" placeholder="ex: iPhone de Adnel"></div>
+        <button class="btn btn-primary btn-small" id="passkey-register-btn">Ajouter cet appareil</button>
+        <p id="passkey-error" class="form-error" style="display:none;"></p>
+      </div>
+      <div class="admin-card">
+        <h4>Changer le mot de passe admin</h4>
+        <div class="admin-field"><label>Nouveau mot de passe</label><input type="password" id="new-pass"></div>
+        <button class="btn btn-primary btn-small" id="change-pass">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox hidden" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">&times;</button>
+  <button class="lightbox-nav prev" id="lightbox-prev">&#8249;</button>
+  <img id="lightbox-img" src="" alt="Photo du projet">
+  <button class="lightbox-nav next" id="lightbox-next">&#8250;</button>
+  <span class="lightbox-count" id="lightbox-count"></span>
+</div>
+
+<div class="media-lightbox hidden" id="media-lightbox">
+  <button class="media-lightbox-close" id="media-lightbox-close">&times;</button>
+  <div id="media-lightbox-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
