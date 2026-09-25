@@ -483,6 +483,26 @@ document.getElementById('login-submit').addEventListener('click', tryLogin);
 document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.altKey && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); openLogin(); }
 });
+
+/* Déclencheur mobile : Ctrl+Alt+A est injoignable au doigt sur un téléphone
+   (pas de clavier physique), donc on ajoute un déclencheur tactile équivalent :
+   7 taps rapides (moins de 2s au total) sur la mention de copyright en pied de page. */
+(() => {
+  const copyrightEl = document.querySelector('.copyright');
+  if (!copyrightEl) return;
+  let tapCount = 0;
+  let resetTimer = null;
+  copyrightEl.addEventListener('click', () => {
+    tapCount++;
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(() => { tapCount = 0; }, 2000);
+    if (tapCount >= 7) {
+      tapCount = 0;
+      clearTimeout(resetTimer);
+      openLogin();
+    }
+  });
+})();
 document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
 async function tryLogin() {
