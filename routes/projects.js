@@ -32,6 +32,10 @@ function validateProjectPayload(body) {
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM projects ORDER BY created_at DESC');
+    // Change rarement (ajout/édition côté admin) : cache navigateur court
+    // pour éviter de retélécharger toutes les photos en base64 à chaque
+    // navigation dans le site pendant les 2 minutes qui suivent.
+    res.set('Cache-Control', 'private, max-age=120');
     res.json(result.rows);
   } catch (e) {
     console.error(e);
