@@ -38,6 +38,7 @@ function validateSettingsPayload(body) {
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT data FROM settings WHERE id = 1');
+    res.set('Cache-Control', 'private, max-age=300');
     res.json(result.rows[0] ? result.rows[0].data : {});
   } catch (e) {
     console.error(e);
