@@ -30,6 +30,12 @@ let projectImages = [];
 let siteContent = {};
 let projects = [];
 let reviews = [];
+let futureProjects = [];
+let editingFutureId = null;
+let futureMedia = [];
+let futurePollOptions = [];
+let lightboxMedia = [];
+let lightboxMediaIndex = 0;
 
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -366,6 +372,182 @@ function renderReviews() {
   }
 }
 
+/* ---------- Prochains projets (À venir) ---------- */
+function toEmbedUrl(url) {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) {
+      return { iframe: true, url: `https://www.youtube.com/embed/${u.pathname.slice(1)}` };
+    }
+    if (u.hostname.includes('youtube.com')) {
+      let id = u.searchParams.get('v');
+      if (!id && u.pathname.includes('/embed/')) id = u.pathname.split('/embed/')[1];
+      if (!id && u.pathname.includes('/shorts/')) id = u.pathname.split('/shorts/')[1];
+      return { iframe: true, url: `https://www.youtube.com/embed/${id}` };
+    }
+    if (u.hostname.includes('vimeo.com')) {
+      const id = u.pathname.split('/').filter(Boolean).pop();
+      return { iframe: true, url: `https://player.vimeo.com/video/${id}` };
+    }
+  } catch (e) { /* lien mal formé : traité comme vidéo directe ci-dessous */ }
+  return { iframe: false, url };
+}
+
+function openMediaLightbox(media, index) {
+  if (!media || !media.length) return;
+  lightboxMedia = media;
+  lightboxMediaIndex = index || 0;
+  renderMediaLightbox();
+  document.getElementById('media-lightbox').classList.remove('hidden');
+}
+function renderMediaLightbox() {
+  const item = lightboxMedia[lightboxMediaIndex];
+  const content = document.getElementById('media-lightbox-content');
+  if (!item) return;
+  if (item.type === 'video') {
+    const embed = toEmbedUrl(item.src);
+    content.innerHTML = embed.iframe
+      ? `<iframe src="${escapeHtml(embed.url)}" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`
+      : `<video src="${escapeHtml(item.src)}" controls autoplay></video>`;
+  } else {
+    content.innerHTML = `<img src="${item.src}" alt="Média">`;
+  }
+}
+document.getElementById('media-lightbox-close').addEventListener('click', () => {
+  document.getElementById('media-lightbox-content').innerHTML = '';
+  document.getElementById('media-lightbox').classList.add('hidden');
+});
+document.getElementById('media-lightbox').addEventListener('click', (e) => {
+  if (e.target.id === 'media-lightbox') {
+    document.getElementById('media-lightbox-content').innerHTML = '';
+    document.getElementById('media-lightbox').classList.add('hidden');
+  }
+});
+
+function renderFutureProjects() {
+  document.getElementById('nav-count-future').textContent = `[${futureProjects.length}]`;
+  const list = document.getElementById('future-projects-list');
+
+  if (!futureProjects.length) {
+    list.innerHTML = `<p class="empty-state">Aucun prochain projet publié pour le moment.</p>`;
+  } else {
+    list.innerHTML = futureProjects.map(p => {
+      const mediaHtml = (p.media || []).map((m, i) => `
+        <div class="future-media-item ${m.type === 'video' ? 'video-item' : ''}" data-media-open="${p.id}" data-media-index="${i}">
+          ${m.type === 'image' ? `<img src="${m.src}" alt="${escapeHtml(p.title)}">` : ''}
+        </div>
+      `).join('');
+
+      let pollHtml = '';
+      if (p.pollQuestion && p.pollOptions && p.pollOptions.length) {
+        const votes = p.pollVotes && p.pollVotes.length === p.pollOptions.length ? p.pollVotes : p.pollOptions.map(() => 0);
+        const total = votes.reduce((a, b) => a + b, 0);
+        const hasVoted = p.userVotedOption != null;
+        const optionsHtml = p.pollOptions.map((opt, i) => {
+          const count = votes[i] || 0;
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          return `
+            <button type="button" class="poll-option ${p.userVotedOption === i ? 'voted' : ''}" data-vote="${p.id}" data-option="${i}">
+              ${hasVoted ? `<span class="poll-fill" style="width:${pct}%;"></span>` : ''}
+              <span class="poll-option-row"><span>${escapeHtml(opt)}</span>${hasVoted ? `<span>${pct}%</span>` : ''}</span>
+            </button>
+          `;
+        }).join('');
+        pollHtml = `
+          <div class="poll-block">
+            <p class="poll-question">${escapeHtml(p.pollQuestion)}</p>
+            <div class="poll-options">${optionsHtml}</div>
+            ${hasVoted ? `<p class="poll-total">${total} vote${total > 1 ? 's' : ''}</p>` : ''}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="future-card">
+          <h3 class="future-title">${escapeHtml(p.title)}</h3>
+          <p class="future-desc">${escapeHtml(p.description)}</p>
+          ${mediaHtml ? `<div class="future-media">${mediaHtml}</div>` : ''}
+          <div class="reaction-row">
+            <button type="button" class="reaction-btn like ${p.userReaction === 'like' ? 'active' : ''}" data-react="${p.id}" data-type="like">👍 <span>${p.likesCount || 0}</span></button>
+            <button type="button" class="reaction-btn dislike ${p.userReaction === 'dislike' ? 'active' : ''}" data-react="${p.id}" data-type="dislike">👎 <span>${p.dislikesCount || 0}</span></button>
+          </div>
+          ${pollHtml}
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('[data-media-open]').forEach(el => {
+      el.addEventListener('click', () => {
+        const p = futureProjects.find(x => String(x.id) === el.dataset.mediaOpen);
+        if (p) openMediaLightbox(p.media, parseInt(el.dataset.mediaIndex, 10));
+      });
+    });
+    list.querySelectorAll('[data-react]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          const data = await api(`/future-projects/${btn.dataset.react}/react`, { method: 'POST', body: JSON.stringify({ type: btn.dataset.type }) });
+          const p = futureProjects.find(x => String(x.id) === btn.dataset.react);
+          if (p) { p.likesCount = data.likesCount; p.dislikesCount = data.dislikesCount; p.userReaction = data.userReaction; }
+          renderFutureProjects();
+        } catch (e) { toast(e.message); }
+      });
+    });
+    list.querySelectorAll('[data-vote]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          const data = await api(`/future-projects/${btn.dataset.vote}/vote`, { method: 'POST', body: JSON.stringify({ optionIndex: parseInt(btn.dataset.option, 10) }) });
+          const p = futureProjects.find(x => String(x.id) === btn.dataset.vote);
+          if (p) { p.pollVotes = data.pollVotes; p.userVotedOption = data.userVotedOption; }
+          renderFutureProjects();
+        } catch (e) { toast(e.message); }
+      });
+    });
+  }
+
+  const adminList = document.getElementById('admin-future-list');
+  if (!futureProjects.length) {
+    adminList.innerHTML = `<p class="empty-state">Aucun prochain projet pour l'instant.</p>`;
+  } else {
+    adminList.innerHTML = futureProjects.map(p => `
+      <div class="admin-list-item">
+        <div class="info"><strong>${escapeHtml(p.title)}</strong><span>${p.likesCount || 0} 👍 · ${p.dislikesCount || 0} 👎${p.createdAt ? ' · ' + new Date(p.createdAt).toLocaleDateString('fr-FR') : ''}</span></div>
+        <div class="admin-actions-inline">
+          <button class="link-btn" data-edit-future="${p.id}">Modifier</button>
+          <button class="link-btn danger" data-del-future="${p.id}">Supprimer</button>
+        </div>
+      </div>
+    `).join('');
+    adminList.querySelectorAll('[data-del-future]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await api('/future-projects/' + btn.dataset.delFuture, { method: 'DELETE' });
+          futureProjects = futureProjects.filter(p => String(p.id) !== btn.dataset.delFuture);
+          renderFutureProjects();
+          toast('Prochain projet supprimé.');
+        } catch (e) { toast(e.message); }
+      });
+    });
+    adminList.querySelectorAll('[data-edit-future]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = futureProjects.find(x => String(x.id) === btn.dataset.editFuture);
+        if (!p) return;
+        editingFutureId = p.id;
+        futureMedia = p.media ? [...p.media] : [];
+        futurePollOptions = p.pollOptions ? [...p.pollOptions] : [];
+        document.getElementById('future-title').value = p.title;
+        document.getElementById('future-desc').value = p.description;
+        document.getElementById('future-poll-question').value = p.pollQuestion || '';
+        renderFutureGalleryGrid();
+        renderFuturePollOptions();
+        document.getElementById('future-form-heading').textContent = 'Modifier le prochain projet';
+        document.getElementById('future-save-btn').textContent = 'Mettre à jour le projet';
+        document.getElementById('future-cancel-edit').classList.remove('hidden');
+        document.getElementById('tab-future-admin').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  }
+}
+
 /* ---------- Init ---------- */
 function hidePreloader() {
   const p = document.getElementById('preloader');
@@ -376,14 +558,16 @@ function hidePreloader() {
 
 async function init() {
   try {
-    const [settingsData, projectsData, reviewsData] = await Promise.all([
+    const [settingsData, projectsData, reviewsData, futureData] = await Promise.all([
       api('/settings'),
       api('/projects'),
-      api('/reviews')
+      api('/reviews'),
+      api('/future-projects')
     ]);
     siteContent = settingsData || {};
     projects = projectsData || [];
     reviews = reviewsData || [];
+    futureProjects = futureData || [];
   } catch (e) {
     console.error(e);
     toast("Impossible de charger les données du serveur.");
@@ -392,6 +576,7 @@ async function init() {
   renderFilterTabs();
   renderProjects();
   renderReviews();
+  renderFutureProjects();
   hidePreloader();
   try {
     await api('/auth/me');
@@ -899,3 +1084,152 @@ async function loadPasskeys() {
 
 document.getElementById('passkey-register-btn').addEventListener('click', registerPasskey);
 document.getElementById('passkey-login-btn').addEventListener('click', loginWithPasskey);
+
+/* ---------- Prochains projets (add / edit / cancel) ---------- */
+const MAX_FUTURE_MEDIA = 6;
+const MAX_POLL_OPTIONS = 6;
+
+function renderFutureGalleryGrid() {
+  const grid = document.getElementById('future-gallery-grid');
+  const thumbs = futureMedia.map((m, i) => `
+    <div class="thumb-wrap">
+      ${m.type === 'video'
+        ? `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font-size:0.68rem;padding:4px;text-align:center;word-break:break-all;">▶ Vidéo</div>`
+        : `<img src="${m.src}" alt="Média ${i + 1}">`}
+      <button type="button" class="thumb-remove" data-remove-future-media="${i}" title="Retirer ce média">&times;</button>
+    </div>
+  `).join('');
+  const addBtn = futureMedia.length < MAX_FUTURE_MEDIA
+    ? `<button type="button" class="thumb-add" id="future-add-photo-btn">+ Ajouter<br>une photo</button>`
+    : '';
+  grid.innerHTML = thumbs + addBtn;
+
+  const addBtnEl = document.getElementById('future-add-photo-btn');
+  if (addBtnEl) addBtnEl.addEventListener('click', () => document.getElementById('future-image-input').click());
+  grid.querySelectorAll('[data-remove-future-media]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      futureMedia.splice(parseInt(btn.dataset.removeFutureMedia, 10), 1);
+      renderFutureGalleryGrid();
+    });
+  });
+}
+renderFutureGalleryGrid();
+
+document.getElementById('future-image-input').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  const room = MAX_FUTURE_MEDIA - futureMedia.length;
+  if (room <= 0) { toast(`Maximum ${MAX_FUTURE_MEDIA} médias (photos + vidéos).`); e.target.value = ''; return; }
+  const toProcess = files.slice(0, room);
+  if (files.length > room) toast(`Seuls les ${room} premiers médias ont été ajoutés (maximum ${MAX_FUTURE_MEDIA}).`);
+  toast('Optimisation des photos…');
+  for (const file of toProcess) {
+    try {
+      const compressed = await compressImage(file, 1600, 0.82);
+      futureMedia.push({ type: 'image', src: compressed });
+    } catch (err) { toast(err.message); }
+  }
+  renderFutureGalleryGrid();
+  e.target.value = '';
+});
+
+document.getElementById('future-add-video-btn').addEventListener('click', () => {
+  const url = document.getElementById('future-video-url').value.trim();
+  if (!url) { toast('Renseigne un lien vidéo.'); return; }
+  if (!/^https?:\/\//i.test(url)) { toast('Le lien vidéo doit commencer par http:// ou https://.'); return; }
+  if (futureMedia.length >= MAX_FUTURE_MEDIA) { toast(`Maximum ${MAX_FUTURE_MEDIA} médias (photos + vidéos).`); return; }
+  futureMedia.push({ type: 'video', src: url });
+  document.getElementById('future-video-url').value = '';
+  renderFutureGalleryGrid();
+});
+
+function renderFuturePollOptions() {
+  const container = document.getElementById('future-poll-options');
+  container.innerHTML = futurePollOptions.map((opt, i) => `
+    <div class="poll-option-row">
+      <input type="text" value="${escapeHtml(opt)}" data-poll-opt-input="${i}" placeholder="Option ${i + 1}">
+      <button type="button" class="link-btn danger" data-remove-poll-opt="${i}">&times;</button>
+    </div>
+  `).join('');
+  container.querySelectorAll('[data-poll-opt-input]').forEach(input => {
+    input.addEventListener('input', () => {
+      futurePollOptions[parseInt(input.dataset.pollOptInput, 10)] = input.value;
+    });
+  });
+  container.querySelectorAll('[data-remove-poll-opt]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      futurePollOptions.splice(parseInt(btn.dataset.removePollOpt, 10), 1);
+      renderFuturePollOptions();
+    });
+  });
+}
+renderFuturePollOptions();
+
+document.getElementById('future-add-option-btn').addEventListener('click', () => {
+  if (futurePollOptions.length >= MAX_POLL_OPTIONS) { toast(`Maximum ${MAX_POLL_OPTIONS} options par sondage.`); return; }
+  futurePollOptions.push('');
+  renderFuturePollOptions();
+});
+
+function resetFutureForm() {
+  editingFutureId = null;
+  futureMedia = [];
+  futurePollOptions = [];
+  document.getElementById('future-title').value = '';
+  document.getElementById('future-desc').value = '';
+  document.getElementById('future-poll-question').value = '';
+  document.getElementById('future-video-url').value = '';
+  renderFutureGalleryGrid();
+  renderFuturePollOptions();
+  document.getElementById('future-form-heading').textContent = 'Ajouter un prochain projet';
+  document.getElementById('future-save-btn').textContent = 'Ajouter le projet';
+  document.getElementById('future-cancel-edit').classList.add('hidden');
+  const errorEl = document.getElementById('future-error');
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+}
+
+document.getElementById('future-save-btn').addEventListener('click', async () => {
+  const title = document.getElementById('future-title').value.trim();
+  const description = document.getElementById('future-desc').value.trim();
+  const pollQuestion = document.getElementById('future-poll-question').value.trim();
+  const errorEl = document.getElementById('future-error');
+  errorEl.style.display = 'none';
+
+  if (!title || !description) {
+    errorEl.textContent = 'Titre et description requis.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  const cleanPollOptions = futurePollOptions.map(o => o.trim()).filter(Boolean);
+  if (pollQuestion && cleanPollOptions.length < 2) {
+    errorEl.textContent = 'Un sondage doit avoir au moins 2 options.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const payload = {
+    title, description,
+    media: futureMedia,
+    pollQuestion,
+    pollOptions: pollQuestion ? cleanPollOptions : []
+  };
+
+  try {
+    if (editingFutureId) {
+      const updated = await api('/future-projects/' + editingFutureId, { method: 'PUT', body: JSON.stringify(payload) });
+      futureProjects = futureProjects.map(p => p.id === updated.id ? updated : p);
+      toast('Prochain projet mis à jour.');
+    } else {
+      const created = await api('/future-projects', { method: 'POST', body: JSON.stringify(payload) });
+      futureProjects.unshift(created);
+      toast('Prochain projet ajouté.');
+    }
+    resetFutureForm();
+    renderFutureProjects();
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = 'block';
+  }
+});
+document.getElementById('future-cancel-edit').addEventListener('click', resetFutureForm);
