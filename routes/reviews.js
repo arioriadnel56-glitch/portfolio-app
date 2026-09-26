@@ -8,6 +8,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM reviews ORDER BY created_at DESC');
+    res.set('Cache-Control', 'private, max-age=120');
     res.json(result.rows);
   } catch (e) {
     console.error(e);
