@@ -179,7 +179,7 @@ function renderProjects() {
     list.innerHTML = filtered.map(p => {
       const imgs = (p.images && p.images.length) ? p.images : (p.image ? [p.image] : []);
       const thumbContent = imgs.length
-        ? `<img src="${imgs[0]}" alt="${escapeHtml(p.title)}" data-gallery-open="${p.id}" data-index="0">
+        ? `<img src="${imgs[0]}" alt="${escapeHtml(p.title)}" data-gallery-open="${p.id}" data-index="0" loading="lazy" decoding="async">
            ${imgs.length > 1 ? `
              <button type="button" class="gallery-nav prev" data-gallery-prev="${p.id}">&#8249;</button>
              <button type="button" class="gallery-nav next" data-gallery-next="${p.id}">&#8250;</button>
@@ -434,7 +434,7 @@ function renderFutureProjects() {
     list.innerHTML = futureProjects.map(p => {
       const mediaHtml = (p.media || []).map((m, i) => `
         <div class="future-media-item ${m.type === 'video' ? 'video-item' : ''}" data-media-open="${p.id}" data-media-index="${i}">
-          ${m.type === 'image' ? `<img src="${m.src}" alt="${escapeHtml(p.title)}">` : ''}
+          ${m.type === 'image' ? `<img src="${m.src}" alt="${escapeHtml(p.title)}" loading="lazy" decoding="async">` : ''}
         </div>
       `).join('');
 
