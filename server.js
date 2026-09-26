@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
@@ -22,6 +23,11 @@ const app = express();
 // que les cookies "secure" et la détection HTTPS fonctionnent correctement.
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+// Compresse toutes les réponses (JSON et fichiers statiques) : réduit
+// nettement le temps de chargement, surtout pour les projets avec photos
+// (les images sont stockées en base64, donc les réponses JSON sont lourdes).
+app.use(compression());
 
 app.use(helmet({
   contentSecurityPolicy: {
@@ -117,7 +123,16 @@ if (ADMIN_ACCESS_PATH) {
   });
 }
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Cache navigateur pour les fichiers statiques : les visites suivantes
+// n'ont plus besoin de retélécharger le CSS/JS/icônes déjà en cache.
+// index.html est exclu (maxAge 0) pour que les mises à jour du site
+// s'affichent immédiatement, sans cache agressif dessus.
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache');
+  }
+}));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
